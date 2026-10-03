@@ -87,7 +87,7 @@ window.GHOSTS = [
   extra: ["Standing still near a Dayan makes it the slowest hunting ghost short of a Deogen or slowed Deildegast, which can save a loop."]
 },
 {
-  id: "deildegast", name: "Deildegast", isNew: true,
+  id: "deildegast", name: "Deildegast", rarelyNormalSpeed: true, isNew: true,
   evidence: ["emf", "writing", "dots"],
   speeds: [{ v: 3.0, label: "nothing touched" }, { v: 1.7, label: "13 items" }, { v: 0.4, label: "26+ items" }],
   range: true, los: false,
@@ -140,7 +140,7 @@ window.GHOSTS = [
   ]
 },
 {
-  id: "deogen", name: "Deogen",
+  id: "deogen", name: "Deogen", rarelyNormalSpeed: true,
   evidence: ["spiritbox", "writing", "dots"], guaranteed: "spiritbox",
   speeds: [{ v: 3.0, label: "far" }, { v: 0.4, label: "close" }],
   los: false,
@@ -200,7 +200,7 @@ window.GHOSTS = [
   extra: ["DOTS is guaranteed whenever at least 1 evidence is given.", "The bone being in the ghost room is pure chance, not a Goryo tell."]
 },
 {
-  id: "hantu", name: "Hantu",
+  id: "hantu", name: "Hantu", rarelyNormalSpeed: true,
   evidence: ["uv", "orbs", "freezing"], guaranteed: "freezing",
   speeds: [{ v: 1.4, label: "warm (15°C+)" }, { v: 2.1, label: "9 to 12°C" }, { v: 2.7, label: "below 0°C" }],
   range: true, los: false,
@@ -281,7 +281,7 @@ window.GHOSTS = [
   ]
 },
 {
-  id: "moroi", name: "Moroi",
+  id: "moroi", name: "Moroi", rarelyNormalSpeed: true,
   evidence: ["spiritbox", "writing", "freezing"], guaranteed: "spiritbox",
   speeds: [{ v: 1.5, label: "45%+ sanity" }, { v: 1.75, label: "~30% sanity" }, { v: 2.25, label: "0–5% sanity" }],
   range: true, los: true, losNote: "Standard LOS. Max 3.71 m/s at 0% sanity, the fastest in the game.",
@@ -518,7 +518,7 @@ window.GHOSTS = [
   extra: ["Any ghost may happen to wait 180s; only a Spirit must. Use the smudge timer in the tools panel."]
 },
 {
-  id: "thaye", name: "Thaye",
+  id: "thaye", name: "Thaye", rarelyNormalSpeed: true,
   evidence: ["orbs", "writing", "dots"],
   speeds: [{ v: 2.75, label: "youngest" }, { v: 1.7, label: "6 ages" }, { v: 1.0, label: "oldest" }],
   range: true, los: false,

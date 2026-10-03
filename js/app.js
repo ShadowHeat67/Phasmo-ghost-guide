@@ -68,7 +68,7 @@ function evidenceOk(g) {
 function speedOk(g) {
   if (!state.speed.size || g.fakeOrbs) return true;
   const lo = minS(g), hi = maxS(g);
-  const normal = speedsOf(g).includes(NORMAL) || (g.range && lo < NORMAL && hi > NORMAL);
+  const normal = !g.rarelyNormalSpeed && (speedsOf(g).includes(NORMAL) || (g.range && lo < NORMAL && hi > NORMAL));
   return (state.speed.has("slow") && lo < NORMAL) || (state.speed.has("normal") && normal) || (state.speed.has("fast") && hi > NORMAL);
 }
 function losOk(g) {
