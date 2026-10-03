@@ -55,6 +55,8 @@ kbd { font: 600 11px/1 var(--display); }
 .tabs button[aria-selected="true"] { color: var(--text); border-bottom-color: var(--uv); }
 .tabs button:hover { color: var(--text); }
 .ftoggle { display: none; }
+.themebtn { background: var(--panel); border: 1px solid var(--line); border-radius: var(--r-sm); padding: 6px 12px; font: 600 15px/1.2 var(--display); color: var(--text); }
+.themebtn:hover { background: var(--panel-2); }
 
 /* layout */
 .layout { display: grid; grid-template-columns: 300px minmax(0, 1fr); align-items: start; }

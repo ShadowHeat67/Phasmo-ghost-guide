@@ -549,6 +549,19 @@ document.addEventListener("keydown", e => {
   else if (k === "r" && e.shiftKey) resetAll();
 });
 
+/* ---------- theme ---------- */
+const THEMES = ["auto", "dark", "light"];
+const themeBtn = $("#themeToggle");
+const applyTheme = t => {
+  if (t === "auto") delete document.documentElement.dataset.theme; else document.documentElement.dataset.theme = t;
+  themeBtn.textContent = "Theme: " + t[0].toUpperCase() + t.slice(1);
+};
+applyTheme(store.get("theme", "auto"));
+themeBtn.addEventListener("click", () => {
+  const next = THEMES[(THEMES.indexOf(store.get("theme", "auto")) + 1) % THEMES.length];
+  store.set("theme", next); applyTheme(next); setTop();
+});
+
 /* ---------- boot ---------- */
 $$(".gv").forEach(x => x.textContent = window.GAME_VERSION);
 $$(".dd").forEach(x => x.textContent = window.DATA_DATE);
