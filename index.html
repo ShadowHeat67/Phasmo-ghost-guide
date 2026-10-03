@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Phasmo Ghost Guide</title>
+<meta name="description" content="Interactive Phasmophobia ghost identifier with evidence filters, hunt speed footsteps, timers and tests. Updated for v0.19.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body data-tab="ghosts">
+<a class="skip" href="#main">Skip to ghosts</a>
+
+<header class="top">
+  <div class="brand">
+    <h1>Phasmo Ghost Guide</h1>
+    <p>Game version <span class="gv"></span>, data checked <span class="dd"></span></p>
+  </div>
+  <nav class="tabs" role="tablist" aria-label="Sections">
+    <button role="tab" data-tab="ghosts" aria-selected="true">Ghosts</button>
+    <button role="tab" data-tab="speeds">Speeds</button>
+    <button role="tab" data-tab="tests">Tests</button>
+    <button role="tab" data-tab="changes">What changed</button>
+  </nav>
+  <button id="filtersToggle" class="ftoggle" aria-expanded="false" aria-controls="rail">Filters and tools</button>
+</header>
+
+<div class="layout">
+  <aside id="rail" class="rail-panel" aria-label="Filters and tools">
+    <section class="block">
+      <div class="bh"><h2>Evidence</h2><button id="reset" class="link">Reset all</button></div>
+      <p class="hint">Click once for found, twice for ruled out. Keys 1 to 7.</p>
+      <div id="evList" class="evlist"></div>
+      <div class="seg" id="evCount" role="group" aria-label="Evidence given by difficulty">
+        <span>Evidence given</span>
+        <button data-n="3">3</button><button data-n="2">2</button><button data-n="1">1</button><button data-n="0">0</button>
+      </div>
+    </section>
+
+    <section class="block">
+      <h2>Hunt behaviour</h2>
+      <div class="frow"><span>Start speed</span>
+        <div class="chips" id="speedF"><button data-v="slow" aria-pressed="false">Slow</button><button data-v="normal" aria-pressed="false">Normal</button><button data-v="fast" aria-pressed="false">Fast</button></div></div>
+      <div class="frow"><span>Speeds up in LOS</span>
+        <div class="chips" id="losF"><button data-v="yes" aria-pressed="false">Yes</button><button data-v="no" aria-pressed="false">No</button></div></div>
+      <div class="frow"><span>Hunted at</span>
+        <div class="chips" id="sanityF"><button data-v="late" aria-pressed="false">&lt;40%</button><button data-v="normal" aria-pressed="false">40–50%</button><button data-v="early" aria-pressed="false">&gt;50%</button><button data-v="very" aria-pressed="false">&gt;75%</button></div></div>
+    </section>
+
+    <section class="block">
+      <h2>Timers</h2>
+      <div class="timer" id="smudge" data-idle="Start when you smudge the ghost (key S)">
+        <div class="th"><span>Smudge</span><span class="tt">0:00</span><button class="tgo">Start</button></div>
+        <div class="tbar"><span class="tfill"></span><span class="ticks"></span></div>
+        <p class="tmsg"></p>
+      </div>
+      <div class="timer" id="cooldown" data-idle="Start when a hunt ends or a crucifix burns (key C)">
+        <div class="th"><span>Hunt cooldown</span><span class="tt">0:00</span><button class="tgo">Start</button></div>
+        <div class="tbar"><span class="tfill"></span><span class="ticks"></span></div>
+        <p class="tmsg"></p>
+      </div>
+    </section>
+
+    <section class="block">
+      <h2>Footstep tempo</h2>
+      <p class="hint">Tap along to a hunting ghost's steps (key T) to estimate its speed.</p>
+      <div class="tap"><button id="tapBtn" class="tapbtn">Tap</button><button id="tapReset" class="link">Clear</button></div>
+      <p id="tapOut" class="tapout">Tap along with the footsteps</p>
+      <div id="tapMatch" class="tapmatch"></div>
+    </section>
+
+    <section class="block">
+      <h2>Sound</h2>
+      <label class="fld">Ghost speed setting
+        <select id="mod"><option value="0.5">50%</option><option value="0.75">75%</option><option value="1">100%</option><option value="1.25">125%</option><option value="1.5">150%</option></select></label>
+      <label class="fld">Floor
+        <select id="surface"><option value="wood">Wood</option><option value="carpet">Carpet</option><option value="tile">Tile</option><option value="gravel">Gravel</option><option value="click">Metronome click</option></select></label>
+      <label class="fld">Volume <input id="volume" type="range" min="0" max="1" step="0.05"></label>
+    </section>
+  </aside>
+
+  <main id="main">
+    <section id="page-ghosts" class="page">
+      <div class="gh">
+        <label class="search"><span class="vh">Search ghosts</span><input id="search" type="search" placeholder="Search names, tells or notes ( / )" autocomplete="off"></label>
+        <p id="count" class="count" aria-live="polite"></p>
+        <label class="chk"><input id="hideOut" type="checkbox"> Hide ruled-out</label>
+      </div>
+      <p class="legend"><span class="lg-norm"></span>1.7 m/s normal <span class="lg-los"></span>reachable with line of sight <span class="lg-range"></span>speed range. Click any number on a speed bar to hear its footsteps.</p>
+      <div id="grid" class="grid"></div>
+    </section>
+
+    <section id="page-speeds" class="page" hidden>
+      <div class="prose">
+        <h2>Hear every hunt speed</h2>
+        <p>Footsteps are synthesized at the rate a ghost walks: steps per second follow the same speed-to-tempo formula the Zero-Network cheat sheet uses, so 1.7 m/s plays at about 117 steps a minute. Set the ghost speed setting in the sidebar if your contract changes it.</p>
+      </div>
+      <h3 class="sub">Hunt patterns</h3>
+      <div id="demoList" class="plays"></div>
+      <h3 class="sub">Slowest to fastest</h3>
+      <ol id="ladder" class="ladder"></ol>
+    </section>
+
+    <section id="page-tests" class="page" hidden>
+      <div class="cols2">
+        <section><h2>Set up the same way every game</h2><ol id="setupList" class="steps"></ol></section>
+        <section><h2>Rule ghosts out in this order</h2><ol id="orderList" class="steps"></ol></section>
+      </div>
+      <h2>Evidence lookup</h2>
+      <p class="hint">* guaranteed when at least 1 evidence is given.</p>
+      <div class="tw"><table class="lookup"><thead><tr><th>Evidence</th><th>Ghosts</th><th>Who can show it</th></tr></thead><tbody id="evLookup"></tbody></table></div>
+      <div id="testTables" class="tests"></div>
+    </section>
+
+    <section id="page-changes" class="page" hidden>
+      <div class="prose">
+        <h2>What changed since the old cheat sheet</h2>
+        <p>The previous PDF used game data from v0.17.1.5 (June 2026). Three updates have landed since. Everything on this site reflects <span class="gv"></span>.</p>
+      </div>
+      <ol id="changeList" class="changes"></ol>
+      <h2>Where the YouTube video stands now</h2>
+      <div class="tw"><table><thead><tr><th>Topic</th><th>Video said</th><th>Current game</th></tr></thead><tbody id="videoRows"></tbody></table></div>
+      <div class="prose sources">
+        <h2>Sources</h2>
+        <p>Kinetic Games patch notes for v0.18.0.0, v0.18.0.1, v0.19.0.0 and v0.19.0.1. The Zero-Network Unofficial Phasmo Cheat Sheet (its open wiki text as of 22 Sep 2026 and the v0.17.1.5 ghost data snapshot). The Phasmophobia Fandom wiki for Deildegast details. Hunt sanity for Deildegast comes from community testing.</p>
+        <p>Not affiliated with Kinetic Games. Phasmophobia is a trademark of Kinetic Games Limited. Footstep sounds here are generated in your browser, not taken from the game.</p>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div id="nowPlaying" class="np" hidden role="status">
+  <span id="npDot" class="npdot"></span>
+  <span id="npName" class="npname"></span>
+  <span id="npSpeed" class="npspeed"></span>
+  <span id="npSpm" class="npspm"></span>
+  <span class="npbar"><span id="npProg"></span></span>
+  <button id="npStop">Stop</button>
+</div>
+
+<div id="drawer" class="drawer" hidden>
+  <div class="dpanel" role="dialog" aria-modal="true" aria-labelledby="drawerTitle">
+    <button id="drawerClose" class="dclose" aria-label="Close">Close</button>
+    <div id="drawerBody"></div>
+  </div>
+</div>
+
+<script src="js/ghosts.js"></script>
+<script src="js/guides.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
