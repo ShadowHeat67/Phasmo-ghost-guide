@@ -23,7 +23,7 @@ const store = {
 const state = {
   ev: Object.fromEntries(EV_KEYS.map(k => [k, 0])),
   evCount: store.get("evCount", 3),
-  speed: new Set(), los: null, sanity: new Set(),
+  speed: new Set(), los: null, sanity: new Set(), normalBlink: false, male: false,
   marks: {}, query: "", hideOut: store.get("hideOut", false),
   mod: store.get("mod", 1), surface: store.get("surface", "wood"), volume: store.get("volume", 0.6)
 };
@@ -87,7 +87,8 @@ function queryOk(g) {
   const hay = [g.name, ...(g.tells || []), ...(g.extra || []), window.VIDEO_NAMES[g.id] || ""].join(" ").toLowerCase();
   return q.split(/\s+/).every(w => hay.includes(w));
 }
-const possible = g => evidenceOk(g) && speedOk(g) && losOk(g) && sanityOk(g) && state.marks[g.id] !== "out";
+const traitOut = g => (state.normalBlink && !!g.abnormalBlink) || (state.male && !!g.female);
+const possible = g => evidenceOk(g) && speedOk(g) && losOk(g) && sanityOk(g) && !traitOut(g) && state.marks[g.id] !== "out";
 
 /* ---------- audio engine ---------- */
 const Audio = (() => {
@@ -280,7 +281,7 @@ function renderGrid() {
         <h3><button class="open" data-id="${g.id}">${g.name}</button>${g.isNew ? '<em class="tag new">New</em>' : ""}${g.female ? '<em class="tag">♀ only</em>' : ""}</h3>
         <div class="acts">
           <button class="pick" data-id="${g.id}" aria-pressed="${mark === "pick"}" title="Mark as my guess">${mark === "pick" ? "★" : "☆"}</button>
-          <button class="cross" data-id="${g.id}" aria-pressed="${mark === "out"}" title="Rule out">✕</button>
+          <button class="cross" data-id="${g.id}" aria-pressed="${mark === "out" || traitOut(g)}" title="Rule out">✕</button>
         </div>
       </header>
       <div class="evrow">${evChips(g)}</div>
@@ -298,7 +299,7 @@ function renderGrid() {
 }
 
 function renderEvAvailability() {
-  const live = G.filter(g => speedOk(g) && losOk(g) && sanityOk(g) && state.marks[g.id] !== "out" && evidenceOk(g));
+  const live = G.filter(g => speedOk(g) && losOk(g) && sanityOk(g) && !traitOut(g) && state.marks[g.id] !== "out" && evidenceOk(g));
   for (const k of EV_KEYS) {
     const btn = $(`.evbtn[data-ev="${k}"]`);
     const still = live.some(g => g.evidence.includes(k) || (g.fakeOrbs && k === "orbs"));
@@ -400,13 +401,17 @@ function buildFilters() {
     const v = b.dataset.v === "yes"; state.los = state.los === v ? null : v;
     $$("#losF button").forEach(x => x.setAttribute("aria-pressed", state.los !== null && (x.dataset.v === "yes") === state.los)); renderGrid(); }));
   $("#search").addEventListener("input", e => { state.query = e.target.value; renderGrid(); });
+  [["#normalBlink", "normalBlink"], ["#maleF", "male"]].forEach(([sel, key]) => {
+    const c = $(sel); c.checked = state[key];
+    c.addEventListener("change", () => { state[key] = c.checked; renderGrid(); });
+  });
   const ho = $("#hideOut"); ho.checked = state.hideOut;
   ho.addEventListener("change", () => { state.hideOut = ho.checked; store.set("hideOut", ho.checked); renderGrid(); });
   $("#reset").addEventListener("click", resetAll);
 }
 function resetAll() {
   EV_KEYS.forEach(k => { state.ev[k] = 0; $(`.evbtn[data-ev="${k}"]`).dataset.state = 0; });
-  state.speed.clear(); state.sanity.clear(); state.los = null; state.marks = {}; state.query = ""; $("#search").value = "";
+  state.speed.clear(); state.sanity.clear(); state.los = null; state.normalBlink = state.male = false; $("#normalBlink").checked = $("#maleF").checked = false; state.marks = {}; state.query = ""; $("#search").value = "";
   $$("#speedF button, #sanityF button, #losF button").forEach(b => b.setAttribute("aria-pressed", "false"));
   timers.forEach(t => t.reset()); tapReset();
   renderGrid();

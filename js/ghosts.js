@@ -360,7 +360,7 @@ window.GHOSTS = [
   extra: ["Use a 2-minute timer from the first front-door opening to predict when it turns aggressive."]
 },
 {
-  id: "oni", name: "Oni",
+  id: "oni", name: "Oni", abnormalBlink: true,
   evidence: ["emf", "freezing", "dots"],
   speeds: [{ v: 1.7, label: "base" }],
   los: true,
@@ -403,7 +403,7 @@ window.GHOSTS = [
   ]
 },
 {
-  id: "phantom", name: "Phantom",
+  id: "phantom", name: "Phantom", abnormalBlink: true,
   evidence: ["spiritbox", "uv", "dots"],
   speeds: [{ v: 1.7, label: "base" }],
   los: true,
